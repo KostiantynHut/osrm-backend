@@ -283,6 +283,20 @@ inline bool IntersectionHandler::IsDistinctTurn(const std::size_t index,
                 return false;
             }
 
+            // in case of a continuing road of higher road class, we accept quite a bit loweer
+            // distinction
+            auto const compare_has_lower_class =
+                (candidate_data.road_classification.GetPriority() ==
+                 via_edge_data.road_classification.GetPriority()) &&
+                (candidate_data.road_classification.GetPriority() <
+                 compare_data.road_classification.GetPriority());
+            if (!candidate_changes_name && !continuing_road_takes_a_turn &&
+                compare_has_lower_class &&
+                compare_deviation / std::max(0.1, candidate_deviation) > 0.7 * DISTINCTION_RATIO)
+            {
+                return false;
+            }
+
             // since the angle and allowed match, we compare road categories. Passing a low priority
             // road allows us to consider it non obvious
             if (distinct_by_class(road))
