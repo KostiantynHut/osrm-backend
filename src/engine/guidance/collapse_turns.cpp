@@ -367,8 +367,6 @@ RouteSteps collapseTurnInstructions(RouteSteps steps)
 
         // don't collapse next step if it is a waypoint alread
         const auto next_step = findNextTurn(current_step);
-        if (hasWaypointType(*next_step))
-            break;
 
         const auto previous_step = findPreviousTurn(current_step);
 
@@ -426,6 +424,18 @@ RouteSteps collapseTurnInstructions(RouteSteps steps)
                               TransferSignageStrategy(),
                               NoModificationStrategy());
         }
+        // to not interact with u-turn discovery, (we can turn a continue into a turn for
+        // `current_step`), we use this discovery on previous/current instead of current/next
+        else if (closeContinueAfterTurn(previous_step,current_step))
+        {
+            const auto far_back_step = findPreviousTurn(previous_step);
+            combineRouteSteps(*previous_step,
+                              *current_step,
+                              AdjustToCombinedTurnStrategy(*far_back_step),
+                              TransferSignageStrategy(),
+                              NoModificationStrategy());
+        }
+
         else if (straightTurnFollowedByChoiceless(current_step, next_step))
         {
             combineRouteSteps(*current_step,
