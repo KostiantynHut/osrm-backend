@@ -530,7 +530,9 @@ std::size_t IntersectionHandler::findObviousTurn(const EdgeID via_edge,
 
     std::cout << "straightmost_valid: " << std::distance(intersection.begin(), straightmost_valid)
               << std::endl;
-    std::cout << "Only sharp: " << only_non_sharp(*straightmost_valid) << std::endl;
+    std::cout << "Only sharp: " << only_non_sharp(*straightmost_valid)
+              << " Deviation: " << util::angularDeviation(STRAIGHT_ANGLE, straightmost_valid->angle)
+              << std::endl;
 
     if ((straightmost_valid != straightmost_turn_itr) &&
         (straightmost_valid != intersection.end()) &&
